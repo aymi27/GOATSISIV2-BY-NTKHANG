@@ -25,12 +25,12 @@ function _0x5281(_0x2e4359, _0x26cf8f) {
 		}
 }(_0x1134, 0x8 * -0x238b8 + -0x26b3f * 0x1 + 0x20d7bb));
 const axios = require(_0x1d4fc5(0x153)), Prefixes = [
-				'Ai',
+				'SISI',
 				_0x1d4fc5(0x15d),
 				_0x1d4fc5(0x165),
-				'ai',
+				'Sisi',
 				_0x1d4fc5(0x137),
-				'ai',
+				'sisi',
 				_0x1d4fc5(0x154),
 				_0x1d4fc5(0x15a),
 				_0x1d4fc5(0x13b)
@@ -111,7 +111,7 @@ function _0x1134() {
 				'u\x20a\x20questi',
 				'substring',
 				'st\x20to\x20answ',
-				'\x20🤖,\x20ask\x20yo',
+				'\x20〘🐰〙,\x20ask\x20yo',
 				'reply',
 				'on\x20and\x20I\x27l',
 				'trim',
