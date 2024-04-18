@@ -15,7 +15,7 @@ module.exports.run = async ({ api, event, args }) => {
 	try {
 		let message = args.join(" ");
 		if (!message) {
-			return api.sendMessage(`Please put Message`, event.threadID, event.messageID);
+			return api.sendMessage(`bakit mima?`, event.threadID, event.messageID);
 		}
 
 		const response = await axios.get(`https://api.heckerman06.repl.co/api/other/simsimi?message=${message}&lang=ph`);
