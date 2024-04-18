@@ -1,69 +1,87 @@
-const axios = require("axios");
-module.exports = {
-	config: {
-		name: 'sim',
-		version: '1.2',
-		author: 'KENLIEPLAYS',
-		countDown: 3,
-		role: 0,
-		shortDescription: 'Simsimi ChatBot by Simsimi.fun',
-		longDescription: {
-			en: 'Chat with simsimi'
-		},
-		category: 'sim',
-		guide: {
-			en: '   {pn} <word>: chat with simsimi'
-				+ '\n   Example:{pn} hi'
-		}
-	},
+const fs = require('fs');
+const path = require('path');
 
-	langs: {
-		en: {
-			chatting: 'Already Chatting with sim...',
-			error: 'Server Down Please Be Patient'
-		}
-	},
+const jsonFilePath = path.join(__dirname, 'response.json');
 
-	onStart: async function ({ args, message, event, getLang }) {
-		if (args[0]) {
-			const yourMessage = args.join(" ");
-			try {
-				const responseMessage = await getMessage(yourMessage);
-				return message.reply(`${responseMessage}`);
-			}
-			catch (err) {
-				console.log(err)
-				return message.reply(getLang("error"));
-			}
-		}
-	},
+let simResponses = {};
 
-	onChat: async ({ args, message, threadsData, event, isUserCallCommand, getLang }) => {
-		if (!isUserCallCommand) {
-			return;
-		}
-		if (args.length > 1) {
-			try {
-				const langCode = await threadsData.get(event.threadID, "settings.lang") || global.GoatBot.config.language;
-				const responseMessage = await getMessage(args.join(" "), langCode);
-				return message.reply(`${responseMessage}`);
-			}
-			catch (err) {
-				return message.reply(getLang("error"));
-			}
-		}
-	}
+module.exports.config = {
+  name: 'sisim',
+  version: '1.0.0',
+  hasPermssion: 0,
+  credits: 'Rickciel',
+  usePrefix: false,
+  description: 'Talk with simsimi',
+  commandCategory: 'Fun',
+  usages: '[sim <input] [teach <input> - <response> / <input>]',
+  cooldowns: 3
 };
 
-async function getMessage(yourMessage, langCode) {
-	try {
-		const res = await axios.get(`https://simsimi.fun/api/v2/?mode=talk&lang=ph&message=${yourMessage}&filter=false`);
-		if (!res.data.success) {
-			throw new Error('API returned a non-successful message');
-		}
-		return res.data.success;
-	} catch (err) {
-		console.error('Error while getting a message:', err);
-		throw err;
-	}
+module.exports.run = ({ api, event, args }) => {
+  const arg = args.join(' ').trim();
+
+  if (!arg) {
+    return api.sendMessage('Hi there', event.threadID);
+  }
+
+  if (arg.startsWith('teach ')) {
+    const teachArgs = arg.slice(6).split(' - ');
+
+    if (teachArgs.length === 2) {
+      const input = teachArgs[0].trim().toLowerCase();
+      const response = teachArgs[1].trim();
+
+      if (!simResponses[input]) {
+        simResponses[input] = [];
       }
+
+      if (Array.isArray(simResponses[input])) {
+        simResponses[input].push(response);
+        saveSimResponses();
+
+        const count = simResponses[input].length;
+        const times = count === 1 ? 'time' : 'times';
+        return api.sendMessage(`i learned how to respond to "${input}" with "${response}" for ${count} ${times}.`, event.threadID);
+      } else {
+        return api.sendMessage('An error occurred while teaching Sim.', event.threadID);
+      }
+    }
+  } else {
+    const responseArray = simResponses[arg.toLowerCase()];
+    if (responseArray && responseArray.length > 0) {
+      const randomIndex = Math.floor(Math.random() * responseArray.length);
+      const response = responseArray[randomIndex];
+      return api.sendMessage(response, event.threadID);
+    }
+  }
+
+  return api.sendMessage('i dont know know how to respond to that please teach me.', event.threadID);
+};
+
+function saveSimResponses() {
+  const data = {
+    responses: simResponses
+  };
+
+  fs.writeFileSync(jsonFilePath, JSON.stringify(data, null, 2), 'utf-8');
+}
+
+function loadSimResponses() {
+  try {
+    const rawData = fs.readFileSync(jsonFilePath, 'utf-8');
+    const data = JSON.parse(rawData);
+    simResponses = data.responses || {};
+
+  
+    for (const input in simResponses) {
+      if (typeof simResponses[input] === 'string') {
+        simResponses[input] = [simResponses[input]];
+      }
+    }
+  } catch (error) {
+    
+  }
+}
+
+
+loadSimResponses();
