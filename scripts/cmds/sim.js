@@ -1,25 +1,28 @@
-const name = global.config.BOTNAME;
-const bot = name.toLowerCase();
+const axios = require("axios");
+
 module.exports.config = {
-  name: `${bot}`, 
-  version: "1.0.0",
-  hasPermission: 0,
-  credits: "Prince Sanel Osorio",
-  description: `Chat with ${name} Bot`,
-  commandCategory: "Random",
-  usages: `${global.config.PREFIX}${bot} message`,
-  cooldowns: 0,
+	name: "sim",
+	version: "1",
+	hasPermission: 0,
+	credits: "Grey",
+	description: "Simsimi",
+	usages: "Message",
+	commandCategory: "...",
+	cooldowns: 0
 };
 
-module.exports.run = async function ({ api, event, args }) {
-	var { threadID, messageID } = event;
-	const axios = require("axios");
+module.exports.run = async ({ api, event, args }) => {
 	try {
-		const request = args.join(" ");
-		if (!request) return api.sendMessage("[!] Need an message to proceed!", threadID, messageID);
-		const res = await axios.get(`https://mainapi.princemc166.repl.co/api/sim?message=${request}`);
-		api.sendMessage(res.data.message, threadID, messageID);
+		let message = args.join(" ");
+		if (!message) {
+			return api.sendMessage(`Please put Message`, event.threadID, event.messageID);
+		}
+
+		const response = await axios.get(`https://api.heckerman06.repl.co/api/other/simsimi?message=${message}&lang=ph`);
+		const respond = response.data.message;
+		api.sendMessage(respond, event.threadID, event.messageID);
 	} catch (error) {
-		api.sendMessage("An error occured while fetching the sim api", threadID, messageID);
+		console.error("An error occurred:", error);
+		api.sendMessage("Oops! Something went wrong.", event.threadID, event.messageID);
 	}
-}
+};
