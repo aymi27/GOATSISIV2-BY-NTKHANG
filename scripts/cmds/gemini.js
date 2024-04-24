@@ -1,63 +1,41 @@
-const axios = require("axios");
-
 module.exports = {
-  config: {
-    name: "gem",
-    version: "1.0",
-    author: "Samir OE",
-    countDown: 5,
-    role: 0,
-    category: "google"
-  },
-  onStart: async function({ message, event, args, commandName }) {
-    const text = args.join(' ');
+	config: {
+		name: 'gemini',
+		version: '2.5.4',
+		author: 'Deku', // credits owner of this api
+		role: 0,
+		category: 'bard',
+		shortDescription: {
+			en: 'Talk to Gemini (conversational).',
+		},
+		guide: {
+			en: '{pn} [prompt]',
+		},
+	},
 
-    try {
-      const response = await axios.get(`https://bnw.samirzyx.repl.co/api/Gemini?text=${encodeURIComponent(text)}`);
-
-      if (response.data && response.data.candidates && response.data.candidates.length > 0) {
-        const textContent = response.data.candidates[0].content.parts[0].text;
-        const ans = `${textContent}`;
-        message.reply({
-          body: ans,
-        }, (err, info) => {
-          global.GoatBot.onReply.set(info.messageID, {
-            commandName,
-            messageID: info.messageID,
-            author: event.senderID
-          });
-        });
-      } 
-
-    } catch (error) {
-      console.error("Error:", error.message);
-    }
-  },
-
-  onReply: async function({ message, event, Reply, args }) {
-    let { author, commandName } = Reply;
-    if (event.senderID != author) return;
-    const gif = args.join(' ');
-
-    try {
-      const response = await axios.get(`https://bnw.samirzyx.repl.co/api/Gemini?text=${encodeURIComponent(gif)}`);
-
-      if (response.data && response.data.candidates && response.data.candidates.length > 0) {
-        const textContent = response.data.candidates[0].content.parts[0].text;
-        const wh = `${textContent}`;
-        message.reply({
-          body: wh,
-        }, (err, info) => {
-          global.GoatBot.onReply.set(info.messageID, {
-            commandName,
-            messageID: info.messageID,
-            author: event.senderID
-          });
-        });
-      } 
-
-    } catch (error) {
-      console.error("Error:", error.message);
-    }
-  }
+	onStart: async function ({ api, event, args }) {
+		const axios = require("axios");
+		let prompt = args.join(" "),
+			uid = event.senderID,
+			url;
+		if (!prompt) return api.sendMessage(`Please enter a prompt.`, event.threadID);
+		api.sendTypingIndicator(event.threadID);
+		try {
+			const geminiApi = `https://deku-rest-api.replit.app/gemini?prompt=hello&uid=100`;
+			if (event.type == "message_reply") {
+				if (event.messageReply.attachments[0]?.type == "photo") {
+					url = encodeURIComponent(event.messageReply.attachments[0].url);
+					const res = (await axios.get(`${geminiApi}/gemini?prompt=${prompt}&url=${url}&uid=${uid}`)).data;
+					return api.sendMessage(res.gemini, event.threadID);
+				} else {
+					return api.sendMessage('Please reply to an image.', event.threadID);
+				}
+			}
+			const response = (await axios.get(`${geminiApi}/gemini?prompt=${prompt}&uid=${uid}`)).data;
+			return api.sendMessage(response.gemini, event.threadID);
+		} catch (error) {
+			console.error(error);
+			return api.sendMessage('❌ | An error occurred. You can try typing your query again or resending it. There might be an issue with the server that\'s causing the problem, and it might resolve on retrying.', event.threadID);
+		}
+	}
 };
