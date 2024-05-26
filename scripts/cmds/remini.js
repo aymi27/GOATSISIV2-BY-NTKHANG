@@ -30,12 +30,12 @@ module.exports = {
       const { url: g, type: h } = f || {};
 
       if (!f || !["photo", "sticker"].includes(h)) {
-        return message.reply("❌ | Reply must be an image.");
+        return message.reply("🫙 | 𝖱𝖾𝗉𝗅𝗒 𝗆𝗎𝗌𝗍 𝖻𝖾 𝖺𝗇 𝗂𝗆𝖺𝗀𝖾.");
       }
 
       try {
         const i = await tinyurl.shorten(g);
-        const { data: j } = await axios.get(`https://vex-kshitiz.vercel.app/upscale?url=${encodeURIComponent(i)}`, {
+        const { data: j } = await axios.get(`https://hiroshi-rest-api.replit.app/tools/remini?url=${encodeURIComponent(i)}`, {
           responseType: "json"
         });
 
@@ -53,10 +53,10 @@ module.exports = {
         message.reply({ attachment: fs.createReadStream(imagePath) }, d);
       } catch (m) {
         console.error(m);
-        message.reply("❌ | Error occurred while enhancing image.");
+        message.reply("🫗 | 𝖤𝗋𝗋𝗈𝗋 𝗈𝖼𝖼𝗎𝗋𝗋𝖾𝖽 𝗐𝗁𝗂𝗅𝖾 𝖾𝗇𝗁𝖺𝗇𝖼𝗂𝗇𝗀 𝗂𝗆𝖺𝗀𝖾.");
       }
     } else {
-      message.reply("❌ | Please reply to an image.");
+      message.reply("🫗 | 𝖯𝗅𝖾𝖺𝗌𝖾 𝗋𝖾𝗉𝗅𝗒 𝗍𝗈 𝖺𝗇 𝗂𝗆𝖺𝗀𝖾.");
     }
   }
 };
