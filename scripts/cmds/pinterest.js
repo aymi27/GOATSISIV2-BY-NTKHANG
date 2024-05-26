@@ -32,7 +32,7 @@ module.exports = {
                         const keySearchs = keySearch.substr(0, keySearch.indexOf('-')).trim();
                         const numberSearch = parseInt(keySearch.split("-").pop().trim()) || 6;
 
-                        const res = await axios.get(`https://hiroshi-rest-api.replit.app/tools/remini?url=${encodeURIComponent(keySearchs)}`);
+                        const res = await axios.get(`https://hiroshi-rest-api.replit.app/search/pinterest?search=shen%20yue${encodeURIComponent(keySearchs)}`);
                         const data = res.data;
 
                         if (!data || !Array.isArray(data) || data.length === 0) {
